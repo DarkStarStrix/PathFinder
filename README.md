@@ -26,7 +26,9 @@ This project implements a maze solver using the A* algorithm. The goal is to fin
    git clone https://github.com/your-username/maze-solver.git
 
  cd maze-solver
+ 
 pip install -r requirements.txt
+
 python maze_solver.py
 
 Customization
