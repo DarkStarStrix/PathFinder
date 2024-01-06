@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+HEAD
 # A* Maze Solver
 
 This project is an implementation of A* pathfinding algorithm to solve a maze. The maze is represented as a grid of cells, where each cell can either be open or a wall. The goal of the algorithm is to find the shortest path from a start cell to a goal cell.
@@ -62,4 +62,4 @@ python maze_solver.py
 
 Customization
 Adjust the maze dimensions, number of obstacles, and other parameters in the maze_solver.py file.
->>>>>>> origin/master
+ origin/master
