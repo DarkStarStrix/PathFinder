@@ -1,6 +1,6 @@
 # A* Maze Solver
 
-This project is an implementation of A* pathfinding algorithm to solve a maze. The maze is represented as a grid of cells, where each cell can either be open or a wall. The goal of the algorithm is to find the shortest path from a start cell to a goal cell.
+This project is an implementation of A* pathfinding algorithm to solve a maze. The maze is represented as a grid of cells, where each self can either be open or a wall. The goal of the algorithm is to find the shortest path from a start self to a goal self.
 
 ## How it works
 
@@ -14,7 +14,7 @@ This process continues until the algorithm finds the goal or explores all reacha
 
 ## Visualization
 
-The program visualizes the maze and the pathfinding process using Pygame. The start cell, goal cell, walls, and path are all represented with different colors. The program also animates the pathfinding process, showing all the nodes that the algorithm explores.
+The program visualizes the maze and the pathfinding process using Pygame. The start self, goal self, walls, and path are all represented with different colors. The program also animates the pathfinding process, showing all the nodes that the algorithm explores.
 
 ## Usage
 
