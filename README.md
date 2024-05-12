@@ -25,7 +25,8 @@ python A_Pathfinder.py
 ```
 
 You can adjust the size of the maze, the number of walls, and the start and goal cells by modifying the constants at the top of the script.
-=======
+
+
 # PathFinder
 Pathfinder Alothrims 
 
