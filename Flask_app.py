@@ -115,6 +115,9 @@ class Maze:
                          (self.start [0] + 1) * CELL_HEIGHT), fill=color_map ["start"])
         draw.rectangle ((self.goal [1] * CELL_WIDTH, self.goal [0] * CELL_HEIGHT, (self.goal [1] + 1) * CELL_WIDTH,
                          (self.goal [0] + 1) * CELL_HEIGHT), fill=color_map ["goal"])
+
+        # Resize the image to 500x500 before saving
+        self.img = self.img.resize ((500, 500))
         self.img.save ('maze.jpg', format='JPEG')
 
     def get_neighbors(self, cell):
@@ -140,15 +143,15 @@ def index():
     return render_template ('index.html')
 
 
-@app.route('/run-pathfinder', methods=['GET'])
+@app.route ('/run-pathfinder', methods=['GET'])
 def run_pathfinder():
-    maze = Maze()
-    maze.a_star()
-    maze.draw()
-    img_io = io.BytesIO()
-    maze.img.save(img_io, 'JPEG', quality=70)
-    img_io.seek(0)
-    return send_file(img_io, mimetype='image/jpeg')
+    maze = Maze ()
+    maze.a_star ()
+    maze.draw ()
+    img_io = io.BytesIO ()
+    maze.img.save (img_io, 'JPEG', quality=70)
+    img_io.seek (0)
+    return send_file (img_io, mimetype='image/jpeg')
 
 
 if __name__ == '__main__':
