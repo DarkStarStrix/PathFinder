@@ -4,91 +4,174 @@
     <title>Pathfinder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style>
-    body {
-        display: flex; /* Display the content as a flex container */
-        justify-content: center; /* Center the content horizontally */
-        align-items: center; /* Center the content vertically */
-        height: 100vh; /* Set the height of the body to 100% of the viewport height */
-        background-color: #f5f5f5; /* Light gray background */
-    }
-    #canvasContainer {
-        position: relative; /* Set the position of the canvas container */
-        width: 500px; /* Set the dimensions of the canvas container */
-        height: 500px; /* Set the dimensions of the canvas container */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow to the canvas container */
-        border: 3px solid black; /* Add border */
-        overflow: visible; /* Hide the overflow */
-    }
-    #myCanvas {
-        width: 500px; /* Set the dimensions of the canvas */
-        height: 500px;
-    }
-    .btn {
-        position: relative;
-        /* Position the button at the top of the page */
-        top: -270px; /* Move the button down */
-        left: 160px; /* Move the button 20px to the right */
-        background-color: #ff4081; /* Vibrant pink button */
-        color: white; /* White text */
-        border: 2px solid black; /* Black border */
-        padding: 10px 20px; /* Add padding */
-        border-radius: 5px; /* Rounded corners */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow */
-        cursor: pointer; /* Change cursor on hover */
-        /* Center the text */
-        display: flex;
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
-    }
-    #loading {
-    display: none; /* Hide the loading sign by default */
-    position: absolute; /* Set the position of the loading sign */
-    top: 50%; /* Center the loading sign vertically */
-    left: 50%; /* Center the loading sign horizontally */
-    transform: translate(-50%, -50%); /* Center the loading sign */
-    }
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+#canvasContainer {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 3px solid black;
+    overflow: visible;
+}
+#myCanvas {
+    width: 500px;
+    height: 500px;
+}
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.btn {
+    background-color: #ff4081;
+    color: white;
+    border: 2px solid black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#legend {
+    position: relative;
+    left: 20px;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+}
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.start {
+    background-color: green;
+}
+.goal {
+    background-color: red;
+}
+.wall {
+    background-color: black;
+}
+.path {
+    background-color: yellow;
+}
+.visited {
+    background-color: blue;
+}
+.default {
+    background-color: white;
+}
+.border {
+    background-color: gray;
+}
 </style>
 </head>
-    <body>
-    <button class="btn waves-effect waves-light" onclick="runPathfinder()">Run Pathfinder</button>
+<body>
+    <div id="buttonContainer">
+        <button class="btn waves-effect waves-light" onclick="resetMaze()">Reset Maze</button>
+        <button class="btn waves-effect waves-light" onclick="runPathfinder()">Run Pathfinder</button>
+    </div>
+
     <div id="canvasContainer">
         <canvas id="myCanvas" width="500" height="500"></canvas>
-        <div id="loading">
-            <div class="preloader-wrapper big active">
-                <div class="spinner-layer spinner-blue-only">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="gap-patch">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="loading" class="loading-spinner"></div>
     </div>
-</body>
+
+    <div id="legend">
+      <div class="legend-item">
+        <div class="color-box start"></div>
+        <p>Start</p>
+      </div>
+      <div class="legend-item">
+        <div class="color-box goal"></div>
+        <p>Goal</p>
+      </div>
+      <div class="legend-item">
+        <div class="color-box wall"></div>
+        <p>Wall</p>
+      </div>
+      <div class="legend-item">
+        <div class="color-box path"></div>
+        <p>Path</p>
+      </div>
+      <div class="legend-item">
+        <div class="color-box visited"></div>
+        <p>Visited</p>
+      </div>
+      <div class="legend-item">
+        <div class="color-box default"></div>
+        <p>Default</p>
+      </div>
+      <div class="legend-item">
+        <div class="color-box border"></div>
+        <p>Border</p>
+      </div>
+    </div>
+
     <script>
-      function runPathfinder() {
-           let canvas = document.getElementById('myCanvas');
-           let ctx = canvas.getContext('2d');
-           ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        function resetMaze() {
+    let canvas = document.getElementById('myCanvas');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-           document.getElementById('loading').style.display = 'flex'; // Display the loading sign
+    document.getElementById('loading').style.display = 'flex'; // Display the loading sign
 
-        fetch('/run-pathfinder')
-            .then(response => response.blob())
-            .then(blob => {
-                let url = URL.createObjectURL(blob);
-                let img = new Image();
-                img.onload = function() {
-                    // Set the dimensions of the canvas to match the image
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw the image on the canvas
-                  };
+    fetch('/reset-maze')
+        .then(response => response.blob())
+        .then(blob => {
+            let url = URL.createObjectURL(blob);
+            let img = new Image();
+            img.onload = function() {
+                // Set the dimensions of the canvas to match the image
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw the image on the canvas
+            };
+            img.src = url;
+        })
+        .finally(() => {
+            document.getElementById('loading').style.display = 'none'; // Hide the loading sign
+        });
+}
+
+function runPathfinder() {
+    let canvas = document.getElementById('myCanvas');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
+    document.getElementById('loading').style.display = 'flex'; // Display the loading sign
+
+    fetch('/run-pathfinder')
+        .then(response => response.blob())
+        .then(blob => {
+            let url = URL.createObjectURL(blob);
+            let img = new Image();
+            img.onload = function() {
+                // Set the dimensions of the canvas to match the image
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw the image on the canvas
+            };
             img.src = url;
         })
         .finally(() => {
@@ -97,4 +180,5 @@
 }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
 </html>

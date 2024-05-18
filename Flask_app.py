@@ -1,5 +1,5 @@
 import heapq
-from flask import Flask, send_file, render_template, url_for
+from flask import Flask, send_file, render_template
 from PIL import Image, ImageDraw
 import io
 import random
@@ -7,24 +7,52 @@ import random
 # Constants
 WHITE, BLACK, GREEN, RED, BLUE, YELLOW = (255, 255, 255), (0, 0, 0), (0, 255, 0), (255, 0, 0), (0, 0, 255), (
     255, 255, 0)
-WIDTH, HEIGHT, ROWS, COLS = 500, 500, 25, 25
+WIDTH, HEIGHT, ROWS, COLS = 500, 500, 50, 50
 CELL_WIDTH, CELL_HEIGHT = WIDTH // COLS, HEIGHT // ROWS
-START, GOAL, NUM_WALLS = (0, 0), (ROWS - 1, COLS - 1), 100
+START, GOAL = (0, 0), (ROWS - 1, COLS - 1)
 
 
 class Maze:
+    global col, cell_type
+
     def __init__(self):
-        self.agent_position = None
         self.img = None
         self.path = None
         self.visited = set ()
         self.walls = set ()
-        self.borders = set ()
         self.start = START
         self.goal = GOAL
         self.rows = ROWS
         self.cols = COLS
-        self.generate_walls ()
+        self.generate_maze ()
+
+    def generate_maze(self):
+        self.walls = {(row, col) for row in range (self.rows) for col in range (self.cols)}
+        stack = [self.start]
+        while stack:
+            cell = stack [-1]
+            if cell not in self.walls:
+                stack.pop ()
+                continue
+            self.walls.remove (cell)
+            neighbors = [neighbor for neighbor in self.get_neighbors (cell) if neighbor in self.walls]
+            if neighbors:
+                stack.append (random.choice (neighbors))
+            else:
+                stack.pop ()
+
+    def get_neighbors(self, cell):
+        neighbors = []
+        row, col = cell
+        if row > 0:
+            neighbors.append ((row - 1, col))
+        if row < self.rows - 1:
+            neighbors.append ((row + 1, col))
+        if col > 0:
+            neighbors.append ((row, col - 1))
+        if col < self.cols - 1:
+            neighbors.append ((row, col + 1))
+        return neighbors
 
     def a_star(self):
         frontier = []
@@ -45,7 +73,7 @@ class Maze:
                     heapq.heappush (frontier, (priority, next2))
                     came_from [next2] = current
                     self.visited.add (next2)
-                    self.draw ()  # Redraw the maze after each step
+                    self.draw ()
         if self.goal not in came_from:
             return None
         return self.reconstruct_path (came_from)
@@ -64,75 +92,40 @@ class Maze:
         self.path = path
         return path
 
-    def generate_walls(self):
-        self.walls = set ()
-        self.agent_position = self.start
-        self.path = None
-        self.visited = set ()
-
-        # Generate a simple path from the start to the goal
-        simple_path = set ()
-        for row in range (self.start [0], self.goal [0] + 1):
-            simple_path.add ((row, self.start [1]))
-        for col in range (self.start [1], self.goal [1] + 1):
-            simple_path.add ((self.goal [0], col))
-
-        # Generate walls, but avoid placing walls on the simple path
-        for _ in range (NUM_WALLS):
-            row = random.randint (0, self.rows - 1)
-            col = random.randint (0, self.cols - 1)
-            if (row, col) not in [self.start, self.goal] and (row, col) not in simple_path:
-                self.walls.add ((row, col))
-
     def draw(self):
         self.img = Image.new ('RGB', (WIDTH, HEIGHT), WHITE)
-        draw = ImageDraw.Draw (self.img)
-        color_map = {
-            "start": GREEN,
-            "goal": RED,
-            "wall": BLACK,
-            "path": YELLOW,
-            "visited": BLUE,
-            "default": WHITE,
-            "border": (128, 128, 128)  # Gray
-        }
-        for row in range (self.rows):
-            for col in range (self.cols):
-                cell_type = "default"
-                if (row, col) in self.borders:
-                    cell_type = "border"
-                elif (row, col) in self.walls:
-                    cell_type = "wall"
-                elif (row, col) in self.visited:
-                    cell_type = "visited"
-                draw.rectangle ((col * CELL_WIDTH, row * CELL_HEIGHT, (col + 1) * CELL_WIDTH, (row + 1) * CELL_HEIGHT),
-                                fill=color_map [cell_type])
-        if self.path:
-            for cell in self.path:
-                draw.rectangle ((cell [1] * CELL_WIDTH, cell [0] * CELL_HEIGHT, (cell [1] + 1) * CELL_WIDTH,
-                                 (cell [0] + 1) * CELL_HEIGHT), fill=color_map ["path"])
-        draw.rectangle ((self.start [1] * CELL_WIDTH, self.start [0] * CELL_HEIGHT, (self.start [1] + 1) * CELL_WIDTH,
-                         (self.start [0] + 1) * CELL_HEIGHT), fill=color_map ["start"])
-        draw.rectangle ((self.goal [1] * CELL_WIDTH, self.goal [0] * CELL_HEIGHT, (self.goal [1] + 1) * CELL_WIDTH,
-                         (self.goal [0] + 1) * CELL_HEIGHT), fill=color_map ["goal"])
+    draw = ImageDraw.Draw (self.img)
+    for wall in self.walls:
+        draw.rectangle (
+            (wall [1] * CELL_WIDTH, wall [0] * CELL_HEIGHT, (wall [1] + 1) * CELL_WIDTH,
+             (wall [0] + 1) * CELL_HEIGHT),
+            fill=BLACK)
+    for cell in self.visited:
+        draw.rectangle (
+            (cell [1] * CELL_WIDTH, cell [0] * CELL_HEIGHT, (cell [1] + 1) * CELL_WIDTH,
+             (cell [0] + 1) * CELL_HEIGHT),
+            fill=BLUE)
+    if self.path:
+        for cell in self.path:
+            draw.rectangle (
+                (cell [1] * CELL_WIDTH, cell [0] * CELL_HEIGHT, (cell [1] + 1) * CELL_WIDTH,
+                 (cell [0] + 1) * CELL_HEIGHT),
+                fill=YELLOW)
+    draw.rectangle (
+        (self.start [1] * CELL_WIDTH, self.start [0] * CELL_HEIGHT, (self.start [1] + 1) * CELL_WIDTH,
+         (self.start [0] + 1) * CELL_HEIGHT), fill=GREEN)
+    draw.rectangle (
+        (self.goal [1] * CELL_WIDTH, self.goal [0] * CELL_HEIGHT, (self.goal [1] + 1) * CELL_WIDTH,
+         (self.goal [0] + 1) * CELL_HEIGHT), fill=RED)
 
-        # Resize the image to 500x500 before saving
-        self.img = self.img.resize ((500, 500))
-        self.img.save ('maze.jpg', format='JPEG')
+    if self.path:
+        for cell in self.path:
+            draw.rectangle (
+                (cell [1] * CELL_WIDTH, cell [0] * CELL_HEIGHT, (cell [1] + 1) * CELL_WIDTH,
+                 (cell [0] + 1) * CELL_HEIGHT),
+                fill=YELLOW)
 
-    def get_neighbors(self, cell):
-        neighbors = []
-        if cell [0] > 0 and (cell [0] - 1, cell [1]) not in self.walls and (cell [0] - 1, cell [1]) not in self.borders:
-            neighbors.append ((cell [0] - 1, cell [1]))
-        if cell [0] < self.rows - 1 and (cell [0] + 1, cell [1]) not in self.walls and (
-                cell [0] + 1, cell [1]) not in self.borders:
-            neighbors.append ((cell [0] + 1, cell [1]))
-        if cell [1] > 0 and (cell [0], cell [1] - 1) not in self.walls and (cell [0], cell [1] - 1) not in self.borders:
-            neighbors.append ((cell [0], cell [1] - 1))
-        if cell [1] < self.cols - 1 and (cell [0], cell [1] + 1) not in self.walls and (
-                cell [0], cell [1] + 1) not in self.borders:
-            neighbors.append ((cell [0], cell [1] + 1))
-        return neighbors
+    self.img.save ('maze.jpg')
 
 
 app = Flask (__name__)
@@ -154,5 +147,17 @@ def run_pathfinder():
     return send_file (img_io, mimetype='image/jpeg')
 
 
+@app.route ('/reset-maze', methods=['GET'])
+def reset_maze():
+    maze = Maze ()
+    maze.path = None
+    maze.visited = set ()
+    maze.draw ()
+    img_io = io.BytesIO ()
+    maze.img.save (img_io, 'JPEG', quality=70)
+    img_io.seek (0)
+    return send_file (img_io, mimetype='image/jpeg')
+
+
 if __name__ == '__main__':
-    app.run (debug=True)
+    app.run (debug=False)
