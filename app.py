@@ -3,7 +3,7 @@ from flask import Flask, render_template, jsonify, Response
 import pygame
 import io
 import base64
-from maze_solver import Maze
+from A_Pathfinder import Maze
 import threading
 import queue
 import time
