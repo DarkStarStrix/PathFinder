@@ -49,18 +49,33 @@ The goal is to find the shortest path from the start to the goal in a maze with 
 - Pygame library (install with `pip install pygame`)
 
 ## Usage
+Here is a short tutorial on how to run the A* Pathfinder algorithm using Git Bash:
 
-1. Clone the repository:
+### Running A* Pathfinder with Git Bash
 
+1. **Clone the Repository**:
+   First, you need to clone the repository to your local machine. Open Git Bash and run the following command:
    ```bash
-   git clone https://github.com/your-username/maze-solver.git
+   git clone https://github.com/DarkStarStrix/PathFinder.git
+   cd PathFinder
+   ```
 
- cd maze-solver
- 
-pip install -r requirements.txt
+2. **Ensure the Script is Executable**:
+   Make sure the `run_a_pathfinder.sh` script is executable. You can use the following command in Git Bash:
+   ```bash
+   chmod +x run_a_pathfinder.sh
+   ```
 
-python maze_solver.py
+3. **Run the Script**:
+   Execute the script to install the necessary dependencies and run the A* Pathfinder algorithm:
+   ```bash
+   ./run_a_pathfinder.sh
+   ```
 
-Customization
- Adjusts the maze dimensions, number of obstacles, and other parameters in the maze_solver.py file.
- origin/master
+### Prerequisites
+
+- **Python**: Ensure you have Python installed on your system.
+- **pip**: Python package installer should be available.
+
+This script will install the required Python packages and run the A* Pathfinder script, displaying the results using Pygame. Enjoy visualizing the pathfinding algorithm!
+
