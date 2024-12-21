@@ -8,7 +8,7 @@ The* algorithm works by maintaining a priority queue of paths based on their cos
 The heuristic value is an estimate of the cost from the current node to the goal. In this case, it's calculated as the Manhattan distance to the goal.
 
 At each step, the algorithm chooses the path with the lowest total cost (path cost + heuristic value) and explores its neighbors. 
-If a neighbor is the goal, it returns the path. If a neighbor is not the goal, it calculates the cost of the path to that neighbor and adds it to the queue. If it encounters a neighbor that it has seen before, it only updates the path if the new path is cheaper.
+If a neighbor is the goal, it returns the path. If a neighbor is not the goal, it calculates the cost of the path to that neighbor and adds it to the queue. If it encounters a neighbor that it has seen before, it only updates the path if the new path is less expensive.
 
 This process continues until the algorithm finds the goal or explores all reachable nodes. The result is the shortest path from the start to the goal, taking into account the cost of moving between nodes.
 
@@ -28,17 +28,18 @@ You can adjust the size of the maze, the number of walls, and the start and goal
 
 
 # PathFinder
-Pathfinder Alothrims 
+Pathfinder Algorithms 
 
-# Maze Solver with A* Algorithm
+# Maze Solver with an* Algorithm
 
-This project implements a maze solver using the A* algorithm. The goal is to find the shortest path from the start to the goal in a maze with obstacles.
+This project implements a maze solver using an* algorithm.
+The goal is to find the shortest path from the start to the goal in a maze with obstacles.
 
 ## Features
 
 - **Maze Generation**: The maze is generated with random walls (obstacles) to create a challenging environment.
 
-- **A* Algorithm**: The A* algorithm is employed to find the optimal path from the start to the goal, considering the maze's layout.
+- **An* Algorithm**: The* algorithm is employed to find the optimal path from the start to the goal, considering the maze's layout.
 
 - **Visualization**: The Pygame library is used to visualize the maze, pathfinding process, and the final solution.
 
@@ -61,5 +62,5 @@ pip install -r requirements.txt
 python maze_solver.py
 
 Customization
-Adjust the maze dimensions, number of obstacles, and other parameters in the maze_solver.py file.
+ Adjusts the maze dimensions, number of obstacles, and other parameters in the maze_solver.py file.
  origin/master
